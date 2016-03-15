@@ -55,15 +55,34 @@ function adapter(uri, opts) {
 	// opts
 	var socket = opts.socket;
 	var creds = (opts.username && opts.password) ? opts.username + ':' + opts.password + '@' : '';
-	var host = opts.host || '127.0.0.1';
-	var port = Number(opts.port || 27017);
+	var host = "";
+	if (typeof opts.host == 'object') { //if host is an array of host:port
+		host = opts.host.join(',')
+	}
+	else {
+		host = opts.host || '127.0.0.1';
+		var port = Number(opts.port || 27017);
+		host = host + ":" + port;
+	}
 	var db = opts.db || 'mubsub';
 
 	var client = opts.client;
 	var key = opts.key || 'socket.io';
+	var additionalOpts = '';
+	//if we have additional options we append them to the end
+	if (opts.additionalOptions && typeof opts.additionalOptions == 'object') {
+		var additionalOptsArray = [];
+		Object.keys(opts.additionalOptions).forEach(function (key) {
+			additionalOptsArray.push(key + "=" + opts.additionalOptions[key])
+		});
+
+		if (additionalOptsArray.length > 0) {
+			additionalOpts = "?" + additionalOptsArray.join("&");
+		}
+	}
 
 	// init clients if needed
-	var uri = 'mongodb://' + creds + host + ':' + port + '/' + db
+	var uri = 'mongodb://' + creds + host + '/' + db + additionalOpts;
 	if (!client) client = socket ? mubsub(socket) : mubsub(uri, opts);
 
 	// this server's key

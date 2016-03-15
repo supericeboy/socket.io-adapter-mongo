@@ -33,14 +33,25 @@ localhost:27017
 The following options are allowed:
 
 - `key`: the name of the key to pub/sub events on as prefix (`socket.io`)
-- `host`: host to connect to mongo on (`localhost`)
-- `port`: port to connect to mongo on (`27017`)
+- `host`: host to connect to mongo on (`localhost`) OR an array of host and port `["10.0.15.120:27017","10.0.15.121:27017"]`
+- `port`: port to connect to mongo on (`27017`). Not used if host is an array
 - `db`: db to use in mongo (`mubsub`)
 - `username`: username to connect to mongo with
 - `password`: password to connect to mongo with
 - `socket`: unix domain socket to connect to mongo (`"/tmp/mongo.sock"`). Will
   be used instead of the host and port options if specified.
 - `client`: optional, the mubsub client to publish events on
+- `additionalOptions`: optional, object with additional options such as replicaSet
+
+Replica Set Example Usage
+```
+{
+    host: ["10.0.15.120:27017","10.0.15.121:27017"],
+    additionalOptions: {
+        replicaSet: "rs0"
+    }
+}
+```
 
 If you decide to supply a client, make sure you use [mubsub](https://github.com/scttnlsn/mubsub) as a client or one with an equivalent API.
 
